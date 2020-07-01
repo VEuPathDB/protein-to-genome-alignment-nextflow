@@ -2,20 +2,17 @@
 
 ** Get Started
    + Install Nextflow
-     <pre>
+     #+begin_example
      curl https://get.nextflow.io | bash 
-     </pre>
-
+     #+end_example
    + Run the sample
-     <pre>
-       nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace --outputDir <DESTDIR>
-     </pre>     
-
+     #+begin_example
+     nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace --outputDir <DESTDIR>
+     #+end_example
    + Run the script for real
-     <pre>
-       nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace -C  <config_file>
-     </pre>     
-
+     #+begin_example
+     nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace -C  <config_file>
+     #+end_example
 ** Dependencies
    + exonerate-server version 2.2.0
    + exonerate version 2.2.0
