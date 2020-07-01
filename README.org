@@ -1,1 +1,23 @@
 * proteinToGenomeAlignment
+
+** Get Started
+   + Install Nextflow
+     <pre>
+     curl https://get.nextflow.io | bash 
+     </pre>
+
+   + Run the sample
+     <pre>
+       nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace --outputDir <DESTDIR>
+     </pre>     
+
+   + Run the script for real
+     <pre>
+       nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace -C  <config_file>
+     </pre>     
+
+** Dependencies
+   + exonerate-server version 2.2.0
+   + exonerate version 2.2.0
+   + glib version 2.4.7 
+   + Java 8 or later
