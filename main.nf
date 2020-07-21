@@ -55,11 +55,11 @@ process exonerate {
         exonerate-server --input target.esi --port \$EXONERATE_EXONERATE_SERVER_PORT & pid=\$!
         ps -p \$pid >/dev/null && break 1;
     done
-for (( i=1; i<=$MAX_TRIES; i++ ))
+for (( i=1; i<=\$MAX_TRIES; i++ ))
  do
-    echo Try $i of $MAX_TRIES to connect
-    echo version >/dev/tcp/localhost/$EXONERATE_EXONERATE_SERVER_PORT
-   if [ $? -eq 0 ];then
+    echo Try \$i of \$MAX_TRIES to connect
+    echo version >/dev/tcp/localhost/\$EXONERATE_EXONERATE_SERVER_PORT
+   if [ \$? -eq 0 ];then
     echo exonerate server running on port \$EXONERATE_EXONERATE_SERVER_PORT
     exonerate --fsmmemory $params.fsmmemory -n 1 --geneseed 250 -S n  --minintron 20 --maxintron $params.maxintron  --showcigar n --showvulgar n --showalignment n --showtargetgff y --model protein2genome --query $query_file --target localhost:\$EXONERATE_EXONERATE_SERVER_PORT >alignments.gff
 
