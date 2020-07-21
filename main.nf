@@ -52,7 +52,7 @@ process exonerate {
         done
         EXONERATE_EXONERATE_SERVER_PORT=\$randomNumber;
         exonerate-server --input target.esi --port \$EXONERATE_EXONERATE_SERVER_PORT & pid=\$!
-        sleep 1;
+        sleep 5;
         ps -p \$pid >/dev/null && break 1;
     done
     echo exonerate server running on port \$EXONERATE_EXONERATE_SERVER_PORT
