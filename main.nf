@@ -88,7 +88,7 @@ process makeGff {
 
     open(FILE, "alignments.gff") or die "Cannot open file alignmments.gff for reading: $!";
     open(OUT, ">fixed.gff") or die "Cannot open file fixed.gff for writing: $!";
-    my ($proteinId, $strand);
+    my ($proteinId);
     my $cdsCount = 0;
     while(my $line = <FILE>) {
       chomp $line;
@@ -96,7 +96,6 @@ process makeGff {
       my $type = $a[2];
       if($type eq 'gene') {
         ($proteinId) = $a[8] =~ /sequence (\\S+)/;
-        ($strand) = $a[8] =~ /gene_orientation (\\+|\\-)/;
         $cdsCount = 0;
       }
       if($type eq 'cds') {
@@ -109,7 +108,6 @@ process makeGff {
       else {
         next;
       }
-      $a[6] = $strand;
       print OUT join("\\t", @a) . "\\n";
     }
     close FILE;
