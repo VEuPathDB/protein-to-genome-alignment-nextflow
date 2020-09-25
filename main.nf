@@ -68,7 +68,7 @@ for (( i=1; i<=\$MAX_TRIES; i++ ))
     exit 0
 
    else
-     echo Connection Failed $i of $MAX_TRIES
+     echo Connection Failed \$i of \$MAX_TRIES
    fi
 
  done
