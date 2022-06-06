@@ -1,5 +1,6 @@
 #!/usr/bin/env nextflow
  
+nextflow.enable.dsl=1
 
 proteins = Channel
     .fromPath(params.queryFilePath)
@@ -126,10 +127,19 @@ results = fixed_ch
 process makeResult {
     input:
     file 'result.gff' from results
-    
+    output:
+    file 'result.sorted.gff' into sorted_ch
+    file 'result.sorted.gz' into zip_ch
+    file 'result.sorted.gz.tbi' into tab_ch
     """
-    sort -k1,1 -k4,4n result.gff > $params.outputDir/result.sorted.gff
-    bgzip $params.outputDir/result.sorted.gff
-    tabix -p gff $params.outputDir/result.sorted.gff.gz
+    sort -k1,1 -k4,4n result.gff > result.sorted.gff
+    cat result.sorted.gff > result.sorted
+    bgzip result.sorted
+    tabix -p gff result.sorted.gz
     """
 }
+
+results_sorted = sorted_ch.collectFile(name: 'result.sorted.gff', storeDir: params.outputDir)
+results_zip = zip_ch.collectFile(name: 'result.sorted.gff.gz', storeDir: params.outputDir)
+results_tab = tab_ch.collectFile(name: 'result.sorted.gff.gz.tbi', storeDir: params.outputDir)
+
