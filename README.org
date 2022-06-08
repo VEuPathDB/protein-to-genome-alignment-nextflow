@@ -13,11 +13,3 @@
      #+begin_example
      nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace -C  <config_file>
      #+end_example
-** Dependencies
-   + exonerate-server version 2.2.0
-   + exonerate version 2.2.0
-   + glib version 2.4.7 
-   + Java 8 or later
-   + bgzip
-   + tabix
-   + perl
