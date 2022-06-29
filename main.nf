@@ -1,46 +1,38 @@
-#!/usr/bin/env nextflow
- 
-nextflow.enable.dsl=1
+#!/usr/bin/env nextflow 
+nextflow.enable.dsl=2
 
-proteins = Channel
-    .fromPath(params.queryFilePath)
-    .splitFasta(by: params.queryChunkSize, file:true)
 
 process makeEsd {
     input:
-    path 'target.fa' from params.targetFilePath
- 
+    path 'target.fa'  
     output:
-    path 'target.esd' into targets_esd
-
+    path 'target.esd'
     """
     fasta2esd target.fa target.esd
     """
 }
 
+
 process makeEsi {
     input:
-    path 'target.esd' from targets_esd
-    path 'target.fa' from params.targetFilePath 
-
+    path 'target.esd' 
+    path 'target.fa' 
     output:
-    path 'target.esi' into targets_esi
-
+    path 'target.esi' 
     """
     esd2esi target.esd target.esi --translate yes --memorylimit $params.esd2esiMemoryLimit
     """
 }
 
+
 process exonerate {
     input:
-    file query_file from proteins
-    path 'target.esd' from targets_esd
-    path 'target.fa' from params.targetFilePath 
-    path 'target.esi' from targets_esi    
-    
+    file query_file 
+    path 'target.esd'
+    path 'target.fa' 
+    path 'target.esi'
     output:
-    file 'alignments.gff' into alignments_ch
-
+    file 'alignments.gff'
     """
     RANGE=13000
     FLOOR=8000    
@@ -81,11 +73,9 @@ exit 1
 
 process makeGff {
     input:
-    file 'alignments.gff' from alignments_ch
-    
+    file 'alignments.gff'
     output:
-    file 'fixed.gff' into fixed_ch
- 
+    file 'fixed.gff'
     '''
     #!/usr/bin/env perl
     use strict;
@@ -120,17 +110,13 @@ process makeGff {
 }
 
 
-results = fixed_ch
-    .collectFile(name: 'result.gff')
-
-
 process makeResult {
     input:
-    file 'result.gff' from results
+    file 'result.gff' 
     output:
-    file 'result.sorted.gff' into sorted_ch
-    file 'result.sorted.gz' into zip_ch
-    file 'result.sorted.gz.tbi' into tab_ch
+    file 'result.sorted.gff' 
+    file 'result.sorted.gz' 
+    file 'result.sorted.gz.tbi'
     """
     sort -k1,1 -k4,4n result.gff > result.sorted.gff
     cat result.sorted.gff > result.sorted
@@ -139,7 +125,16 @@ process makeResult {
     """
 }
 
-results_sorted = sorted_ch.collectFile(name: 'result.sorted.gff', storeDir: params.outputDir)
-results_zip = zip_ch.collectFile(name: 'result.sorted.gff.gz', storeDir: params.outputDir)
-results_tab = tab_ch.collectFile(name: 'result.sorted.gff.gz.tbi', storeDir: params.outputDir)
+
+workflow {
+  proteins = Channel.fromPath(params.queryFilePath).splitFasta(by: params.queryChunkSize, file:true)
+  esd = makeEsd(params.targetFilePath)
+  esi = makeEsi(esd, params.targetFilePath)
+  gff = exonerate(proteins, esd, params.targetFilePath, esi)
+  result = makeGff(gff).collectFile(name: 'result.gff')
+  output = makeResult(result)
+  output[0] | collectFile(storeDir: params.outputDir)
+  output[1] | collectFile(storeDir: params.outputDir)
+  output[2] | collectFile(storeDir: params.outputDir)
+}
 
