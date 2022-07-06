@@ -1,6 +1,5 @@
 #!/usr/bin/env nextflow
  
-nextflow.enable.dsl=1
 
 proteins = Channel
     .fromPath(params.queryFilePath)
@@ -64,14 +63,11 @@ for (( i=1; i<=\$MAX_TRIES; i++ ))
    if echo version >/dev/tcp/localhost/\$EXONERATE_EXONERATE_SERVER_PORT; then
     echo exonerate server running on port \$EXONERATE_EXONERATE_SERVER_PORT
     exonerate --fsmmemory $params.fsmmemory -n 1 --geneseed 250 -S n  --minintron 20 --maxintron $params.maxintron  --showcigar n --showvulgar n --showalignment n --showtargetgff y --model protein2genome --query $query_file --target localhost:\$EXONERATE_EXONERATE_SERVER_PORT >alignments.gff
-
     kill \$pid;
     exit 0
-
    else
      echo Connection Failed \$i of \$MAX_TRIES
    fi
-
  done
 kill \$pid;
 exit 1
@@ -89,7 +85,6 @@ process makeGff {
     '''
     #!/usr/bin/env perl
     use strict;
-
     open(FILE, "alignments.gff") or die "Cannot open file alignmments.gff for reading: $!";
     open(OUT, ">fixed.gff") or die "Cannot open file fixed.gff for writing: $!";
     my ($proteinId);
@@ -127,19 +122,10 @@ results = fixed_ch
 process makeResult {
     input:
     file 'result.gff' from results
-    output:
-    file 'result.sorted.gff' into sorted_ch
-    file 'result.sorted.gz' into zip_ch
-    file 'result.sorted.gz.tbi' into tab_ch
+    
     """
-    sort -k1,1 -k4,4n result.gff > result.sorted.gff
-    cat result.sorted.gff > result.sorted
-    bgzip result.sorted
-    tabix -p gff result.sorted.gz
+    sort -k1,1 -k4,4n result.gff > $params.outputDir/result.sorted.gff
+    bgzip $params.outputDir/result.sorted.gff
+    tabix -p gff $params.outputDir/result.sorted.gff.gz
     """
 }
-
-results_sorted = sorted_ch.collectFile(name: 'result.sorted.gff', storeDir: params.outputDir)
-results_zip = zip_ch.collectFile(name: 'result.sorted.gff.gz', storeDir: params.outputDir)
-results_tab = tab_ch.collectFile(name: 'result.sorted.gff.gz.tbi', storeDir: params.outputDir)
-
