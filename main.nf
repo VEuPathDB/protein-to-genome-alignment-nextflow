@@ -63,11 +63,14 @@ for (( i=1; i<=\$MAX_TRIES; i++ ))
    if echo version >/dev/tcp/localhost/\$EXONERATE_EXONERATE_SERVER_PORT; then
     echo exonerate server running on port \$EXONERATE_EXONERATE_SERVER_PORT
     exonerate --fsmmemory $params.fsmmemory -n 1 --geneseed 250 -S n  --minintron 20 --maxintron $params.maxintron  --showcigar n --showvulgar n --showalignment n --showtargetgff y --model protein2genome --query $query_file --target localhost:\$EXONERATE_EXONERATE_SERVER_PORT >alignments.gff
+
     kill \$pid;
     exit 0
+
    else
      echo Connection Failed \$i of \$MAX_TRIES
    fi
+
  done
 kill \$pid;
 exit 1
@@ -85,6 +88,7 @@ process makeGff {
     '''
     #!/usr/bin/env perl
     use strict;
+
     open(FILE, "alignments.gff") or die "Cannot open file alignmments.gff for reading: $!";
     open(OUT, ">fixed.gff") or die "Cannot open file fixed.gff for writing: $!";
     my ($proteinId);
