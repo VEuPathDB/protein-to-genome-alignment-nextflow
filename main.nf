@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow 
-nextflow.enable.dsl=2
 
+nextflow.enable.dsl=2
 
 process makeEsd {
     input:
@@ -20,7 +20,9 @@ process makeEsi {
     output:
     path 'target.esi' 
     """
-    esd2esi target.esd target.esi --translate yes --memorylimit $params.esd2esiMemoryLimit
+    esd2esi target.esd target.esi \
+      --translate yes \
+      --memorylimit $params.esd2esiMemoryLimit
     """
 }
 
