@@ -12,7 +12,7 @@ RUN apt-get install -y \
   default-jre \
   default-jdk \
   tabix \
-  exonerate \
+  exonerate=2.4.0-5 \
   libgtk2.0-dev \
   libglib2.0-dev 
   
