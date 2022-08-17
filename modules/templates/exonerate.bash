@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
 RANGE=13000
 FLOOR=8000    
 MAX_TRIES=12
