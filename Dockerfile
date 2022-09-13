@@ -4,10 +4,8 @@ MAINTAINER rdemko2332@gmail.com
 
 WORKDIR /usr/bin/
 
-RUN apt-get update --fix-missing
-
-#Installing Software
-RUN apt-get install -y \
+RUN apt-get update --fix-missing && \
+  apt-get install -y \
   perl \
   default-jre \
   default-jdk \
