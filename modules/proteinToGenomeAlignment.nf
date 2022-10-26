@@ -88,9 +88,9 @@ process makeResult {
     file 'result.gff' 
 
   output:
-    file 'result.sorted.gff' 
-    file 'result.sorted.gz' 
-    file 'result.sorted.gz.tbi'
+    path 'result.sorted.gff', emit: sorted_gff 
+    path 'result.sorted.gz', emit: sorted_gz
+    path 'result.sorted.gz.tbi', emit: sorted_gztbi
 
   script:
     template 'makeResult.bash'
@@ -100,13 +100,15 @@ process makeResult {
 workflow proteinToGenomeAlignment {
   take:
     seqs
+
   main:
     esd = makeEsd(params.targetFilePath)
     esi = makeEsi(esd, params.targetFilePath)
     gff = exonerate(seqs, esd, params.targetFilePath, esi)
     result = makeGff(gff).collectFile(name: 'result.gff')
     output = makeResult(result)
-    output[0] | collectFile(storeDir: params.outputDir)
-    output[1] | collectFile(storeDir: params.outputDir)
-    output[2] | collectFile(storeDir: params.outputDir)
+    output.sorted_gff | collectFile(storeDir: params.outputDir)
+    output.sorted_gz | collectFile(storeDir: params.outputDir)
+    output.sorted_gztbi | collectFile(storeDir: params.outputDir)
+
 }
