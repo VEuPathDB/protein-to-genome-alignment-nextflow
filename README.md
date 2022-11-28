@@ -1,4 +1,4 @@
-* proteinToGenomeAlignment
+# proteinToGenomeAlignment
 
 Description of nextflow configuration parameters
 
@@ -13,16 +13,11 @@ Description of nextflow configuration parameters
 | fsmmemory | int | Exonerate memory limit |
 | maxintron | int | Value for --maxintron parameter for exonerate |
 
-** Get Started
-   + Install Nextflow
-     #+begin_example
-     curl https://get.nextflow.io | bash 
-     #+end_example
-   + Run the sample
-     #+begin_example
-     nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace --outputDir <DESTDIR>
-     #+end_example
-   + Run the script for real
-     #+begin_example
-     nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace -C  <config_file>
-     #+end_example
+### Get Started
+  * Install Nextflow
+    
+    `curl https://get.nextflow.io | bash`
+  
+  * Run the script
+    
+    `nextflow run VEuPathDB/proteinToGenomeAlignment -with-trace -c  <config_file> -r main`
