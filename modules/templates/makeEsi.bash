@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
-esd2esi target.esd target.esi \
+esd2esi $targetEsd target.esi \
   --translate yes \
-  --memorylimit $params.esd2esiMemoryLimit
+  --memorylimit $esd2esiMemoryLimit

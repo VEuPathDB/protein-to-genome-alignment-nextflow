@@ -14,6 +14,8 @@ RUN apt-get update --fix-missing && \
   libgtk2.0-dev \
   libglib2.0-dev 
   
+COPY /bin/* /usr/bin/
+
 RUN chmod +x *  
 
 WORKDIR /work

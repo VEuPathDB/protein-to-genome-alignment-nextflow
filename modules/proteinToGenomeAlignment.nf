@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 
 process makeEsd {
   input:
-    path 'target.fa'  
+    path targetFasta  
 
   output:
     path 'target.esd'
@@ -16,8 +16,9 @@ process makeEsd {
 
 process makeEsi {
   input:
-    path 'target.esd' 
-    path 'target.fa' 
+    path targetEsd 
+    path targetFasta
+    val esd2esiMemoryLimit
   output:
     path 'target.esi' 
 
@@ -29,9 +30,11 @@ process makeEsi {
 process exonerate {
   input:
     file query_file 
-    path 'target.esd'
-    path 'target.fa' 
-    path 'target.esi'
+    path targetEsd
+    path targetFasta 
+    path targetEsi
+    val fsmMemory
+    val maxIntron
 
   output:
     file 'alignments.gff'
@@ -43,49 +46,19 @@ process exonerate {
 
 process makeGff {
   input:
-    file 'alignments.gff'
+    file alignmentsGff
 
   output:
     file 'fixed.gff'
 
   script:
-    '''
-    #!/usr/bin/env perl
-    use strict;
-
-    open(FILE, "alignments.gff") or die "Cannot open file alignmments.gff for reading: $!";
-    open(OUT, ">fixed.gff") or die "Cannot open file fixed.gff for writing: $!";
-    my ($proteinId);
-    my $cdsCount = 0;
-    while(my $line = <FILE>) {
-      chomp $line;
-      my @a = split(/\\t/, $line);
-      my $type = $a[2];
-      if($type eq 'gene') {
-        ($proteinId) = $a[8] =~ /sequence (\\S+)/;
-        $cdsCount = 0;
-      }
-      if($type eq 'cds') {
-        $cdsCount++;
-        $a[8] = "ID=${proteinId}_cds_${cdsCount};Parent=${proteinId}";
-      }
-      elsif($type eq 'similarity') {
-        $a[8] = "ID=${proteinId}";
-      }
-      else {
-        next;
-      }
-      print OUT join("\\t", @a) . "\\n";
-    }
-    close FILE;
-    close OUT;
-   '''
+    template 'makeGff.bash'
 }
 
 
 process makeResult {
   input:
-    file 'result.gff' 
+    file resultGff 
 
   output:
     path 'result.sorted.gff', emit: sorted_gff 
@@ -103,8 +76,8 @@ workflow proteinToGenomeAlignment {
 
   main:
     esd = makeEsd(params.targetFilePath)
-    esi = makeEsi(esd, params.targetFilePath)
-    gff = exonerate(seqs, esd, params.targetFilePath, esi)
+    esi = makeEsi(esd, params.targetFilePath, params.esd2esiMemoryLimit)
+    gff = exonerate(seqs, esd, params.targetFilePath, esi, params.fsmmemory, params.maxintron)
     result = makeGff(gff).collectFile(name: 'result.gff')
     output = makeResult(result)
     output.sorted_gff | collectFile(storeDir: params.outputDir)

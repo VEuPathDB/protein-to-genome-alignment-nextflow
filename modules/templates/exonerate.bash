@@ -12,7 +12,7 @@ for (( i = 0 ; i <= 1000 ; i++ )); do
 	  let "randomNumber %= \$RANGE"
         done
   EXONERATE_EXONERATE_SERVER_PORT=\$randomNumber;
-  exonerate-server --input target.esi --port \$EXONERATE_EXONERATE_SERVER_PORT & pid=\$!
+  exonerate-server --input $targetEsi --port \$EXONERATE_EXONERATE_SERVER_PORT & pid=\$!
   ps -p \$pid >/dev/null && break 1;
 done
 for (( i=1; i<=\$MAX_TRIES; i++ ))
@@ -22,7 +22,7 @@ for (( i=1; i<=\$MAX_TRIES; i++ ))
    
   if echo version >/dev/tcp/localhost/\$EXONERATE_EXONERATE_SERVER_PORT; then
     echo exonerate server running on port \$EXONERATE_EXONERATE_SERVER_PORT
-    exonerate --fsmmemory $params.fsmmemory -n 1 --geneseed 250 -S n  --minintron 20 --maxintron $params.maxintron  --showcigar n --showvulgar n --showalignment n --showtargetgff y --model protein2genome --query $query_file --target localhost:\$EXONERATE_EXONERATE_SERVER_PORT >alignments.gff
+    exonerate --fsmmemory $fsmMemory -n 1 --geneseed 250 -S n  --minintron 20 --maxintron $maxIntron  --showcigar n --showvulgar n --showalignment n --showtargetgff y --model protein2genome --query $query_file --target localhost:\$EXONERATE_EXONERATE_SERVER_PORT >alignments.gff
 
     kill \$pid;
     exit 0
