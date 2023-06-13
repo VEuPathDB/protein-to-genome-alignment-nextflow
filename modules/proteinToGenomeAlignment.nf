@@ -2,61 +2,38 @@
 nextflow.enable.dsl=2
 
 
-process makeEsd {
+process downloadFromUniref {
+  container = 'veupathdb/diamondsimilarity'
   input:
-    path targetFasta  
+    val projectName
 
   output:
-    path 'target.esd'
+    path 'uniRef_subset.fasta'
 
   script:
-    template 'makeEsd.bash'
+    template 'downloadFromUniref.bash'
 }
 
 
-process makeEsi {
+process miniprot {
+  container='nanozoo/miniprot:2.24--0c673d2'
+  publishDir "$params.outputDir", mode: "copy"   
+
   input:
-    path targetEsd 
-    path targetFasta
-    val esd2esiMemoryLimit
-  output:
-    path 'target.esi' 
-
-  script:
-    template 'makeEsi.bash'
-}
-
-
-process exonerate {
-  input:
-    file query_file 
-    path targetEsd
-    path targetFasta 
-    path targetEsi
-    val fsmMemory
-    val maxIntron
+    path queryFile 
+    path unirefFasta
+    val maxIntronLen
 
   output:
     file 'alignments.gff'
 
   script:
-    template 'exonerate.bash'
-}
-
-
-process makeGff {
-  input:
-    file alignmentsGff
-
-  output:
-    file 'fixed.gff'
-
-  script:
-    template 'makeGff.bash'
+    template 'miniprot.bash'
 }
 
 
 process makeResult {
+  container = "veupathdb/proteintogenomealignment"
   input:
     file resultGff 
 
@@ -75,11 +52,13 @@ workflow proteinToGenomeAlignment {
     seqs
 
   main:
-    esd = makeEsd(params.targetFilePath)
-    esi = makeEsi(esd, params.targetFilePath, params.esd2esiMemoryLimit)
-    gff = exonerate(seqs, esd, params.targetFilePath, esi, params.fsmmemory, params.maxintron)
-    result = makeGff(gff).collectFile(name: 'result.gff')
-    output = makeResult(result)
+
+    unirefFasta = downloadFromUniref(params.projectName)
+
+    miniprotResults = miniprot(unirefFasta,seqs, params.maxIntronLen)
+
+    output = makeResult(miniprotResults)
+
     output.sorted_gff | collectFile(storeDir: params.outputDir)
     output.sorted_gz | collectFile(storeDir: params.outputDir)
     output.sorted_gztbi | collectFile(storeDir: params.outputDir)
