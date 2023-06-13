@@ -20,7 +20,7 @@ process miniprot {
   publishDir "$params.outputDir", mode: "copy"   
 
   input:
-    path queryFile 
+    path targetFile 
     path unirefFasta
     val maxIntronLen
 
@@ -55,7 +55,7 @@ workflow proteinToGenomeAlignment {
 
     unirefFasta = downloadFromUniref(params.projectName)
 
-    miniprotResults = miniprot(unirefFasta,seqs, params.maxIntronLen)
+    miniprotResults = miniprot(seqs, unirefFasta, params.maxIntronLen)
 
     output = makeResult(miniprotResults)
 

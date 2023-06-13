@@ -6,11 +6,11 @@ nextflow.enable.dsl=2
 // Param Checking
 //--------------------------------------------------------------------------
 
-if(params.queryFilePath) {
-  seqs = Channel.fromPath(params.queryFilePath).splitFasta(by: params.queryChunkSize, file:true)
+if(params.genomeFilePath) {
+  seqs = Channel.fromPath(params.genomeFilePath).splitFasta(by: params.queryChunkSize, file:true)
 }
 else {
-  throw new Exception("Missing params.queryFilePath")
+  throw new Exception("Missing params.genomeFilePath")
 }
 
 //--------------------------------------------------------------------------
