@@ -2,7 +2,4 @@
 
 set -euo pipefail
 
-miniprot --gff -G $maxIntronLen $targetFile $unirefFasta > temp.gff
-
-grep "miniprot" temp.gff > alignments.gff
-
+miniprot -K 5M -G $maxIntronLen -N 5 --gff-only $targetFile $unirefFasta > alignments.gff
