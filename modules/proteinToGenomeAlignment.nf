@@ -15,20 +15,61 @@ process downloadFromUniref {
 }
 
 
-process miniprot {
-  container='nanozoo/miniprot:2.24--0c673d2'
-  publishDir "$params.outputDir", mode: "copy"   
-
+process makeEsd {
+  container = "veupathdb/proteintogenomealignment"
   input:
-    path targetFile 
-    path unirefFasta
-    val maxIntronLen
+    path targetFasta  
+
+  output:
+    path 'target.esd'
+
+  script:
+    template 'makeEsd.bash'
+}
+
+
+process makeEsi {
+  container = "veupathdb/proteintogenomealignment"
+  input:
+    path targetEsd 
+    path targetFasta
+    val esd2esiMemoryLimit
+  output:
+    path 'target.esi' 
+
+  script:
+    template 'makeEsi.bash'
+}
+
+
+process exonerate {
+  container = "veupathdb/proteintogenomealignment"
+  input:
+    file query_file 
+    path targetEsd
+    path targetFasta 
+    path targetEsi
+    val fsmMemory
+    val maxIntron
 
   output:
     file 'alignments.gff'
 
   script:
-    template 'miniprot.bash'
+    template 'exonerate.bash'
+}
+
+
+process makeGff {
+  container = "veupathdb/proteintogenomealignment"
+  input:
+    file alignmentsGff
+
+  output:
+    file 'fixed.gff'
+
+  script:
+    template 'makeGff.bash'
 }
 
 
@@ -55,9 +96,11 @@ workflow proteinToGenomeAlignment {
 
     unirefFasta = downloadFromUniref(params.projectName)
 
-    miniprotResults = miniprot(seqs, unirefFasta, params.maxIntronLen)
-
-    output = makeResult(miniprotResults)
+    makeEsdResults = makeEsd(params.genomeFilePath)
+    makeEsiResults = makeEsi(makeEsdResults,params.genomeFilePath,params.esd2esiMemoryLimit)
+    exonerateResults = exonerate(unirefFasta,makeEsdResults,params.genomeFilePath,makeEsiResults,params.fsmmemory,params.maxIntron)
+    makeGffResults = makeGff(exonerateResults)
+    output = makeResult(makeGffResults)
 
     output.sorted_gff | collectFile(storeDir: params.outputDir)
     output.sorted_gz | collectFile(storeDir: params.outputDir)

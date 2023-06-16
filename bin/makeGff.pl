@@ -14,15 +14,18 @@ open(FILE, "$alignmentsGff") or die "Cannot open file $alignmentsGff for reading
 open(OUT, ">fixed.gff") or die "Cannot open file fixed.gff for writing";
 my ($proteinId);
 my $cdsCount = 0;
+my $s;
 while(my $line = <FILE>) {
   chomp $line;
-  my @a = split(/\\t/, $line);
+  my @a = split(/\t/, $line);
   my $type = $a[2];
   if($type eq 'gene') {
-      $proteinId = $a[8] =~ /sequence (\\S+)/;
+      $s = $a[8] =~ /sequence (\S+)/;
+      $proteinId = $1;
+      print "$proteinId\n";
       $cdsCount = 0;
   }
-  if($type eq 'cds') {
+  elsif($type eq 'cds') {
       $cdsCount++;
       $a[8] = "ID=${proteinId}_cds_${cdsCount};Parent=${proteinId}";
   }
@@ -32,7 +35,7 @@ while(my $line = <FILE>) {
   else {
       next;
   }
-  print OUT join("\\t", @a) . "\\n";
+  print OUT join("\t", @a) . "\n";
 }
 close FILE;
 close OUT;
