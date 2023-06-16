@@ -15,7 +15,9 @@ RUN apt-get install -y \
   exonerate=2.4.0-5 \
   libgtk2.0-dev \
   libglib2.0-dev 
-  
+
+COPY /bin/* /usr/bin/
+
 RUN chmod +x *  
 
 WORKDIR /work
