@@ -26,6 +26,7 @@ process makeResult {
     file resultGff 
 
   output:
+    path 'result.gff'
     path 'result.sorted.gff'
     path 'result.sorted.gz'
     path 'result.sorted.gz.tbi'
