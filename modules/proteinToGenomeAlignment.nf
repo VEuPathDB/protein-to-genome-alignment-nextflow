@@ -58,8 +58,6 @@ workflow proteinToGenomeAlignment {
 
     miniprotResults = miniprot(seqs, unirefFasta, params.maxIntronLen)
 
-    miniprotResults | collectFile()
-
     miniprotResults | collectFile(name: 'allAlignments.gff') | makeResult 
 
 }
