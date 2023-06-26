@@ -20,13 +20,15 @@ process miniprot {
 
 process makeResult {
   container = "veupathdb/proteintogenomealignment"
+  publishDir "$params.outputDir", mode: "copy"
+
   input:
     file resultGff 
 
   output:
-    path 'result.sorted.gff', emit: sorted_gff 
-    path 'result.sorted.gz', emit: sorted_gz
-    path 'result.sorted.gz.tbi', emit: sorted_gztbi
+    path 'result.sorted.gff'
+    path 'result.sorted.gz'
+    path 'result.sorted.gz.tbi'
 
   script:
     template 'makeResult.bash'
@@ -42,8 +44,5 @@ workflow proteinToGenomeAlignment {
     gff = miniprot(seqs, params.targetFilePath, params.maxintron)
     result = gff.collectFile(name: 'result.gff', keepHeader: true, skip: 1)
     output = makeResult(result)
-    output.sorted_gff | collectFile(storeDir: params.outputDir)
-    output.sorted_gz | collectFile(storeDir: params.outputDir)
-    output.sorted_gztbi | collectFile(storeDir: params.outputDir)
 
 }
