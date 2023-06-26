@@ -17,7 +17,6 @@ process downloadFromUniref {
 
 process miniprot {
   container='nanozoo/miniprot:2.24--0c673d2'
-  publishDir "$params.outputDir", mode: "copy"   
 
   input:
     path targetFile 
@@ -34,6 +33,8 @@ process miniprot {
 
 process makeResult {
   container = "veupathdb/proteintogenomealignment"
+  publishDir "$params.outputDir", mode: "copy"   
+
   input:
     file resultGff 
 
@@ -57,10 +58,8 @@ workflow proteinToGenomeAlignment {
 
     miniprotResults = miniprot(seqs, unirefFasta, params.maxIntronLen)
 
-    output = makeResult(miniprotResults)
+    miniprotResults | collectFile()
 
-    output.sorted_gff | collectFile(storeDir: params.outputDir)
-    output.sorted_gz | collectFile(storeDir: params.outputDir)
-    output.sorted_gztbi | collectFile(storeDir: params.outputDir)
+    miniprotResults | collectFile(name: 'allAlignments.gff') | makeResult 
 
 }
