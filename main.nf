@@ -126,10 +126,17 @@ results = fixed_ch
 process makeResult {
     input:
     file 'result.gff' from results
-    
+    output:
+    path 'result.sorted.gff' into sorted_ch
+    path 'result.sorted.gz' into zipped_ch
+    path 'result.sorted.gz.tbi' into tabix_ch
     """
-    sort -k1,1 -k4,4n result.gff > $params.outputDir/result.sorted.gff
-    bgzip $params.outputDir/result.sorted.gff
-    tabix -p gff $params.outputDir/result.sorted.gff.gz
+    sort -k1,1 -k4,4n result.gff > result.sorted.gff
+    bgzip result.sorted.gff
+    tabix -p gff result.sorted.gff.gz
     """
 }
+
+sorted_ch.collectFile(name: 'result.sorted.gff', storeDir: params.outputDir)
+zipped_ch.collectFile(name: 'result.sorted.gz', storeDir: params.outputDir)
+tabix_ch.collectFile(name: 'result.sorted.gz.tbi', storeDir: params.outputDir)
