@@ -139,6 +139,5 @@ process makeResult {
     """
 }
 
-sorted_ch.collectFile(name: 'result.sorted.gff', storeDir: params.outputDir)
-zipped_ch.collectFile(name: 'result.sorted.gz', storeDir: params.outputDir)
+zipped_ch.collectFile(name: 'result.sorted.gff.gz', storeDir: params.outputDir)
 tabix_ch.collectFile(name: 'result.sorted.gz.tbi', storeDir: params.outputDir)
