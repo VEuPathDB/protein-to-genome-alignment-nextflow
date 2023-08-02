@@ -128,8 +128,8 @@ process makeResult {
     file 'result.gff' from results
     output:
     path 'result.sorted.gff' into sorted_ch
-    path 'result.sorted.gz' into zipped_ch
-    path 'result.sorted.gz.tbi' into tabix_ch
+    path 'result.sorted.gff.gz' into zipped_ch
+    path 'result.sorted.gff.gz.tbi' into tabix_ch
     """
     sort -k1,1 -k4,4n result.gff > result.sorted.gff
     cp result.sorted.gff hold.gff
