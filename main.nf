@@ -132,7 +132,9 @@ process makeResult {
     path 'result.sorted.gz.tbi' into tabix_ch
     """
     sort -k1,1 -k4,4n result.gff > result.sorted.gff
+    cp result.sorted.gff hold.gff
     bgzip result.sorted.gff
+    mv hold.gff result.sorted.gff
     tabix -p gff result.sorted.gff.gz
     """
 }
