@@ -62,8 +62,8 @@ process makeResult {
 
   output:
     path 'result.sorted.gff', emit: sorted_gff 
-    path 'result.sorted.gz', emit: sorted_gz
-    path 'result.sorted.gz.tbi', emit: sorted_gztbi
+    path 'result.sorted.gff.gz', emit: sorted_gz
+    path 'result.sorted.gff.gz.tbi', emit: sorted_gztbi
 
   script:
     template 'makeResult.bash'
