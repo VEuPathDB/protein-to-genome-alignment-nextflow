@@ -16,7 +16,7 @@ my ($proteinId);
 my $cdsCount = 0;
 while(my $line = <FILE>) {
   chomp $line;
-  my @a = split(/\\t/, $line);
+  my @a = split(/\t/, $line);
   my $type = $a[2];
   if($type eq 'gene') {
       $proteinId = $a[8] =~ /sequence (\\S+)/;
@@ -32,7 +32,7 @@ while(my $line = <FILE>) {
   else {
       next;
   }
-  print OUT join("\\t", @a) . "\\n";
+  print OUT join("\t", @a) . "\n";
 }
 close FILE;
 close OUT;
