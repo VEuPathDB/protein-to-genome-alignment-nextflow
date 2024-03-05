@@ -19,8 +19,14 @@ while(my $line = <FILE>) {
   my @a = split(/\t/, $line);
   my $type = $a[2];
   if($type eq 'gene') {
-      $proteinId = $a[8] =~ /sequence (\S+)/;
-      $cdsCount = 0;
+      if ($line =~ /.*sequence\s(\S+).*/) {
+          $proteinId = $1;
+          print "$proteinId\n";
+          $cdsCount = 0;
+      }
+      else {
+	  die;
+      }
   }
   if($type eq 'cds') {
       $cdsCount++;
