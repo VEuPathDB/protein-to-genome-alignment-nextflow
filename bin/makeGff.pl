@@ -21,7 +21,6 @@ while(my $line = <FILE>) {
   if($type eq 'gene') {
       if ($line =~ /.*sequence\s(\S+).*/) {
           $proteinId = $1;
-          print "$proteinId\n";
           $cdsCount = 0;
       }
       else {
