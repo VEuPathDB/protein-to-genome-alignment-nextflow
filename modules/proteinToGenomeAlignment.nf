@@ -51,20 +51,27 @@ process makeGff {
     template 'makeGff.bash'
 }
 
-process makeResult {
-  publishDir "$params.outputDir", mode: "copy", pattern: 'result.sorted.gff*'
+process indexResults {
+  container = 'biocontainers/tabix:v1.9-11-deb_cv1'
+
+  publishDir params.outputDir, mode: 'copy'
 
   input:
-    path resultGff
+    path gff
+    val outputFileName
 
   output:
-    path 'result.sorted.gff', emit: sorted_gff
-    path 'result.sorted.gff.gz', emit: sorted_gz
-    path 'result.sorted.gff.gz.tbi', emit: sorted_gztbi
+    path '*.gz'
+    path '*.gz.tbi'
 
   script:
-    template 'makeResult.bash'
+  """
+  sort -k1,1 -k4,4n $gff > ${outputFileName}
+  bgzip ${outputFileName}
+  tabix -p gff ${outputFileName}.gz
+  """
 }
+
 
 workflow proteinToGenomeAlignment {
   take:
@@ -74,6 +81,6 @@ workflow proteinToGenomeAlignment {
     esd = makeEsd(params.targetFilePath)
     esi = makeEsi(esd, params.targetFilePath, params.esd2esiMemoryLimit)
     gff = exonerate(seqs, esd, params.targetFilePath, esi, params.fsmmemory, params.maxintron)
-    result = makeGff(gff).collectFile(name: 'result.gff')
-    output = makeResult(result)
+    result = makeGff(gff).collectFile()
+    output = indexResults(result, params.outputFileName)
 }
