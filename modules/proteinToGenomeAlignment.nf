@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 process makeEsd {
-  container = "veupathdb/proteintogenomealignment:v1.0.0"
+  container = "veupathdb/proteintogenomealignment:1.0.0"
 
   input:
     path targetFasta
@@ -14,7 +14,7 @@ process makeEsd {
 }
 
 process makeEsi {
-  container = "veupathdb/proteintogenomealignment:v1.0.0"
+  container = "veupathdb/proteintogenomealignment:1.0.0"
 
   input:
     path targetEsd
@@ -29,7 +29,7 @@ process makeEsi {
 }
 
 process exonerate {
-  container = "veupathdb/proteintogenomealignment:v1.0.0"
+  container = "veupathdb/proteintogenomealignment:1.0.0"
 
   input:
     path queryFile
@@ -47,7 +47,7 @@ process exonerate {
 }
 
 process makeGff {
-  container = "veupathdb/proteintogenomealignment:v1.0.0"
+  container = "veupathdb/proteintogenomealignment:1.0.0"
 
   input:
     path alignmentsGff
