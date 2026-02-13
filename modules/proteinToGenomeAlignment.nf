@@ -60,7 +60,7 @@ process makeGff {
 }
 
 process indexResults {
-  container = 'biocontainers/tabix:v1.9-11-deb_cv1'
+  container 'biocontainers/tabix:v1.9-11-deb_cv1'
 
   publishDir params.outputDir, mode: 'copy'
 
