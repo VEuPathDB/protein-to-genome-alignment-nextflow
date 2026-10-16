@@ -2,27 +2,6 @@
 nextflow.enable.dsl=2
 
 //--------------------------------------------------------------------------
-// Param Checking
-//--------------------------------------------------------------------------
-
-if(!params.queryChunkSize) {
-  throw new Exception("Missing params.queryChunkSize")
-}
-if(!params.queryFilePath) {
-  throw new Exception("Missing params.queryFilePath")
-}
-else {
-  seqs = Channel.fromPath( params.queryFilePath)
-           .splitFasta( by:params.queryChunkSize, file:true  )
-}
-if(!params.targetFilePath) {
-  throw new Exception("Missing params.targetFilePath")
-}
-if(!params.outputDir) {
-  throw new Exception("Missing params.outputDir")
-}
-
-//--------------------------------------------------------------------------
 // Includes
 //--------------------------------------------------------------------------
 
@@ -33,5 +12,22 @@ include { proteinToGenomeAlignment } from './modules/proteinToGenomeAlignment.nf
 //--------------------------------------------------------------------------
 
 workflow {
+  if(!params.queryChunkSize) {
+    error "Missing params.queryChunkSize"
+  }
+  if(!params.queryFilePath) {
+    error "Missing params.queryFilePath"
+  }
+  else {
+    seqs = channel.fromPath( params.queryFilePath)
+             .splitFasta( by:params.queryChunkSize, file:true  )
+  }
+  if(!params.targetFilePath) {
+    error "Missing params.targetFilePath"
+  }
+  if(!params.outputDir) {
+    error "Missing params.outputDir"
+  }
+
   proteinToGenomeAlignment(seqs)
 }
